@@ -180,7 +180,7 @@ export function computeAchievements(ctx) {
   const nodes = allNodes(c).concat(c.weeks.filter((w) => w.kind === 'bell'));
   const won = (w) => results.some((r) => r.weekId === w && r.winner === 'him');
   let quiz = [];
-  try { quiz = Object.keys(localStorage).filter((k) => k.startsWith('advent.quiz.')).map((k) => store.get(k)?.score || 0); } catch { /* */ }
+  try { quiz = Object.keys(localStorage).filter((k) => k.startsWith('advent.quiz.')).map((k) => store.get(k) || {}); } catch { /* */ }
   const looks = c.looks || [];
   const early = Object.entries(openedAt).some(([id, at]) => {
     const n = nodes.find((x) => x.id === id);
@@ -198,7 +198,7 @@ export function computeAchievements(ctx) {
     oscar: results.some((r) => r.weekId === 'w3' && r.winner !== 'mammoth') || fromCodes.has('oscar'),
     in_form: seen.has('w5'),
     no_strings: seen.has('w4') || fromCodes.has('no_strings'),
-    quiz_pro: quiz.some((s) => s >= 6),
+    quiz_pro: quiz.some((q) => (q.score || 0) >= (q.of || 7) - 1),
     collector: looks.length > 0 && looks.every((l) => lookStatus(l, ctx).status === 'open'),
     champion: st.champion === 'him',
   };

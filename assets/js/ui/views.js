@@ -295,9 +295,10 @@ function quizView(node, ctx) {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const fd = new FormData(form);
-    const score = node.quiz.reduce((acc, q, i) => acc + (Number(fd.get(`q${i}`)) === q.answer ? 1 : 0), 0);
-    store.set(key, { score, at: new Date().toISOString() });
-    wrap.replaceChildren(h('p', {}, `${score} из ${node.quiz.length}! ${score >= 6 ? 'Ты меня знаешь 🫶' : score >= 4 ? 'Неплохо. Но я запомню 👀' : 'Так-так. Нам надо чаще разговаривать'}`),
+    const score = node.quiz.reduce((acc, q, i) => acc + (q.answer === 'any' || Number(fd.get(`q${i}`)) === q.answer ? 1 : 0), 0);
+    const n = node.quiz.length;
+    store.set(key, { score, of: n, at: new Date().toISOString() });
+    wrap.replaceChildren(h('p', {}, `${score} из ${node.quiz.length}! ${score >= n - 1 ? 'Ты меня знаешь 🫶' : score >= Math.ceil(n * 0.55) ? 'Неплохо. Но я запомню 👀' : 'Так-так. Нам надо чаще разговаривать'}`),
       shareBtn(`Мой результат в квизе: ${score} из ${node.quiz.length} ❄`));
   });
   wrap.append(form);
